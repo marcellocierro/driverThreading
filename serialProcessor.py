@@ -2,8 +2,10 @@ import sncosmo
 from analyzeSN import SNANASims
 from analyzeSN import ResChar
 import numpy as np
+from datetime import datetime
 
 def inferParams(snanaSims, model, infer_method, i, minsnr=3.):
+    print(datetime.now().time())
     """
     infer the parameters for the ith supernova in the simulation
     """
@@ -15,15 +17,16 @@ def inferParams(snanaSims, model, infer_method, i, minsnr=3.):
     resfit = infer_method(lcinstance.snCosmoLC(), model, vparam_names=['t0', 'x0', 'x1', 'c'],
                           modelcov=True, minsnr=minsnr)
     reschar = ResChar.fromSNCosmoRes(resfit)
+    print(datetime.now().time())
     return snid, reschar
 
 snana_eg = SNANASims.fromSNANAfileroot(snanafileroot='LSST_Ia',
-                                       location='/Users/rbiswas/data/LSST/SNANA_data/MINION_1016_10YR_DDF_v2/',
+                                       location='/home/zach/Fall2016/CSC_380/MINION_1016_10YR_DDF_v2/',
                                        coerce_inds2int=False)
 
 if __name__ == '__main__':
     snana_eg = SNANASims.fromSNANAfileroot(snanafileroot='LSST_Ia',
-                                           location='/Users/rbiswas/data/LSST/SNANA_data/MINION_1016_10YR_DDF_v2/',
+                                           location='/home/zach/Fall2016/CSC_380/MINION_1016_10YR_DDF_v2/',
                                            coerce_inds2int=False)
     dust = sncosmo.CCM89Dust()
     model = sncosmo.Model(source='salt2-extended',
