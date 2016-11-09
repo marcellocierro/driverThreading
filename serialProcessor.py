@@ -2,10 +2,10 @@ import sncosmo
 from analyzeSN import SNANASims
 from analyzeSN import ResChar
 import numpy as np
-from datetime import datetime
+import datetime
+import os
 
 def inferParams(snanaSims, model, infer_method, i, minsnr=3.):
-    print(datetime.now().time())
     """
     infer the parameters for the ith supernova in the simulation
     """
@@ -17,16 +17,22 @@ def inferParams(snanaSims, model, infer_method, i, minsnr=3.):
     resfit = infer_method(lcinstance.snCosmoLC(), model, vparam_names=['t0', 'x0', 'x1', 'c'],
                           modelcov=True, minsnr=minsnr)
     reschar = ResChar.fromSNCosmoRes(resfit)
-    print(datetime.now().time())
     return snid, reschar
 
-snana_eg = SNANASims.fromSNANAfileroot(snanafileroot='LSST_Ia',
-                                       location='/home/zach/Fall2016/CSC_380/MINION_1016_10YR_DDF_v2/',
-                                       coerce_inds2int=False)
+#!this function finds the location of the Minion file on anyone's laptop
+def findLocation():
+	for root, dirs, files in os.walk('.'):
+             if root == './MINION_1016_10YR_DDF_v2':#! this will contain the file that needs to be used(Origional file was in: /Users/rbiswas/data/LSST/SNANA_data/MINION_1016_10YR_DDF_v2/)
+                  root = str(root)
+                  root = os.path.realpath(root)
+                  return (root)
 
+snana_eg = SNANASims.fromSNANAfileroot(snanafileroot='LSST_Ia',
+                                       location=findLocation(),
+                                       coerce_inds2int=False)
 if __name__ == '__main__':
     snana_eg = SNANASims.fromSNANAfileroot(snanafileroot='LSST_Ia',
-                                           location='/home/zach/Fall2016/CSC_380/MINION_1016_10YR_DDF_v2/',
+                                           location=findLocation(),
                                            coerce_inds2int=False)
     dust = sncosmo.CCM89Dust()
     model = sncosmo.Model(source='salt2-extended',
@@ -35,7 +41,10 @@ if __name__ == '__main__':
 		          effect_frames=['rest', 'obs'])
     for i in range(3):
 	try:
+	    deltaT = datetime.datetime.utcnow()
 	    snid, r = inferParams(snana_eg, model, sncosmo.fit_lc, i, minsnr=3.)
+	    deltaT = datetime.datetime.utcnow() - deltaT
+	    print('Process time = {}'.format(deltaT))
 	    with open('results.dat', 'w') as fh: # Should Not be a text file when improved!
                 write_str = snid
                 write_str += ','.join(map(str, r.parameters)) 
@@ -45,3 +54,5 @@ if __name__ == '__main__':
                 fh.write(write_str)
 	except:
 	    print('SN {} failed'.format(i))
+	    deltaT = datetime.datetime.utcnow() - deltaT
+	    print('Process time = {}'.format(deltaT))
