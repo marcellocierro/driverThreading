@@ -28,11 +28,11 @@ def findLocation():
                   root = os.path.realpath(root)
                   return (root)
 
-def store(result):
+def store(snid, result):
     with open('pResults.dat', 'w') as f:
-        write_str = result
+        write_str = snid
         write_str += ','.join(map(str, result.parameters))
-        write_str += ','.join(map(str, np.asarray(result.covariance).flatten().toList()))
+        write_str += ','.join(map(str, np.asarray(result.covariance).flatten().tolist()))
         f.write(write_str)
 
 if __name__ == '__main__':
@@ -50,15 +50,16 @@ if __name__ == '__main__':
          'minsnr': 3.,
          'iP-0': (inferParams, 'snana_eg', 'model', 'fit', 0, 'minsnr'),
          'iP-1': (inferParams, 'snana_eg', 'model', 'fit', 1, 'minsnr'),
-         #'iP-2': (inferParams, 'snana_eg', 'model', 'fit', 2, 'minsnr'),
-         'store': (store, ('iP-%d' %i for i in [0,1]))}
+         'iP-2': (inferParams, 'snana_eg', 'model', 'fit', 2, 'minsnr')}
     from dask.threaded import get
-    #try:
-    #    deltaT = datetime.datetime.utcnow()
-    get(dsk, 'store')
-    #    deltaT = datetime.datetime.utcnow()
-    #    print('Process time = {}'.format(deltaT))
-    #except:
-    #    print "Unexpected error:", sys.exc_info()[0]
-    #    deltaT = datetime.datetime.utcnow()
-    #    print('Process time = {}'.format(deltaT))
+
+    try:
+	    deltaT = datetime.datetime.utcnow()
+	    sns = get(dsk, ['iP-%d' %i for i in [0, 1]])
+	    deltaT = datetime.datetime.utcnow() - deltaT
+	    print('Process time = {}'.format(deltaT))
+    except:
+	    print('Fail')
+
+    for i in range(0, 2):
+	    store(sns[i][0], sns[i][1])
