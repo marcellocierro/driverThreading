@@ -10,15 +10,18 @@ def inferParams(snanaSims, model, infer_method, i, minsnr=3.):
     """
     infer the parameters for the ith supernova in the simulation
     """
-    snid = snanaSims.headData.index.values[i]
-    z = snanaSims.headData.ix[snid, 'REDSHIFT_FINAL']
-    lcinstance = snanaSims.get_SNANA_photometry(snid=snid)
-    model.set(z=z)
-    print(z)
-    resfit = infer_method(lcinstance.snCosmoLC(), model, vparam_names=['t0', 'x0', 'x1', 'c'],
-                          modelcov=True, minsnr=minsnr)
-    reschar = ResChar.fromSNCosmoRes(resfit)
-    return snid, reschar
+    try:
+	    snid = snanaSims.headData.index.values[i]
+	    z = snanaSims.headData.ix[snid, 'REDSHIFT_FINAL']
+	    lcinstance = snanaSims.get_SNANA_photometry(snid=snid)
+	    model.set(z=z)
+	    print(z)
+	    resfit = infer_method(lcinstance.snCosmoLC(), model, vparam_names=['t0', 'x0', 'x1', 'c'],
+	            modelcov=True, minsnr=minsnr)
+	    reschar = ResChar.fromSNCosmoRes(resfit)
+	    return snid, reschar
+    except:
+	   return None
 
 #!this function finds the location of the Minion file on anyone's laptop
 def findLocation():
@@ -53,13 +56,11 @@ if __name__ == '__main__':
          'iP-2': (inferParams, 'snana_eg', 'model', 'fit', 2, 'minsnr')}
     from dask.threaded import get
 
-    try:
-	    deltaT = datetime.datetime.utcnow()
-	    sns = get(dsk, ['iP-%d' %i for i in [0, 1]])
-	    deltaT = datetime.datetime.utcnow() - deltaT
-	    print('Process time = {}'.format(deltaT))
-    except:
-	    print('Fail')
+    deltaT = datetime.datetime.utcnow()
+    sns = get(dsk, ['iP-%d' %i for i in [0, 1, 2]])
+    deltaT = datetime.datetime.utcnow() - deltaT
+    print('Process time = {}'.format(deltaT))
 
     for i in range(0, 2):
-	    store(sns[i][0], sns[i][1])
+	    if sns[i] != None:
+		    store(sns[i][0], sns[i][1])
