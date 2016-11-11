@@ -39,12 +39,10 @@ if __name__ == '__main__':
 		          effects=[dust, dust],
                           effect_names=['host', 'mw'],
 		          effect_frames=['rest', 'obs'])
+    deltaT = datetime.datetime.utcnow()
     for i in range(3):
 	try:
-	    deltaT = datetime.datetime.utcnow()
 	    snid, r = inferParams(snana_eg, model, sncosmo.fit_lc, i, minsnr=3.)
-	    deltaT = datetime.datetime.utcnow() - deltaT
-	    print('Process time = {}'.format(deltaT))
 	    with open('results.dat', 'w') as fh: # Should Not be a text file when improved!
                 write_str = snid
                 write_str += ','.join(map(str, r.parameters)) 
@@ -54,5 +52,5 @@ if __name__ == '__main__':
                 fh.write(write_str)
 	except:
 	    print('SN {} failed'.format(i))
-	    deltaT = datetime.datetime.utcnow() - deltaT
-	    print('Process time = {}'.format(deltaT))
+    deltaT = datetime.datetime.utcnow() - deltaT
+    print('Process time = {}'.format(deltaT))
