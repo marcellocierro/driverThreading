@@ -53,14 +53,23 @@ if __name__ == '__main__':
          'minsnr': 3.,
          'iP-0': (inferParams, 'snana_eg', 'model', 'fit', 0, 'minsnr'),
          'iP-1': (inferParams, 'snana_eg', 'model', 'fit', 1, 'minsnr'),
-         'iP-2': (inferParams, 'snana_eg', 'model', 'fit', 2, 'minsnr')}
+         'iP-2': (inferParams, 'snana_eg', 'model', 'fit', 2, 'minsnr'),
+         'iP-3': (inferParams, 'snana_eg', 'model', 'fit', 3, 'minsnr'),
+         'iP-4': (inferParams, 'snana_eg', 'model', 'fit', 4, 'minsnr'),
+         'iP-5': (inferParams, 'snana_eg', 'model', 'fit', 5, 'minsnr'),
+         'iP-6': (inferParams, 'snana_eg', 'model', 'fit', 6, 'minsnr'),
+         'iP-7': (inferParams, 'snana_eg', 'model', 'fit', 7, 'minsnr'),
+         'iP-8': (inferParams, 'snana_eg', 'model', 'fit', 8, 'minsnr'),
+         'iP-9': (inferParams, 'snana_eg', 'model', 'fit', 9, 'minsnr'),
+         'iP-10': (inferParams, 'snana_eg', 'model', 'fit', 10, 'minsnr'),
+         'iP-11': (inferParams, 'snana_eg', 'model', 'fit', 11, 'minsnr')}
     from dask.threaded import get
 
     deltaT = datetime.datetime.utcnow()
-    sns = get(dsk, ['iP-%d' %i for i in [0, 1, 2]])
+    sns = get(dsk, ['iP-%d' %i for i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]])
     deltaT = datetime.datetime.utcnow() - deltaT
     print('Process time = {}'.format(deltaT))
 
-    for i in range(0, 2):
+    for i in range(0, 11):
 	    if sns[i] != None:
 		    store(sns[i][0], sns[i][1])
