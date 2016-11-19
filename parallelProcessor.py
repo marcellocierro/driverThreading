@@ -31,11 +31,12 @@ def findLocation():
                   root = os.path.realpath(root)
                   return (root)
 
-def store(snid, result):
-    with open('pResults.dat', 'w') as f:
+def store(snid, result, output):
+    with open(output, 'a') as f:
         write_str = snid
         write_str += ','.join(map(str, result.parameters))
         write_str += ','.join(map(str, np.asarray(result.covariance).flatten().tolist()))
+        write_str += '\n'
         f.write(write_str)
 
 if __name__ == '__main__':
@@ -50,10 +51,12 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
 		rangeFrom = 0
 		rangeTo = 11
+		output = 'results.dat'
 
     else:
 	    rangeFrom = int(sys.argv[1])
 	    rangeTo = int(sys.argv[2])
+	    output = sys.argv[3]
 
     dsk={}
 
@@ -69,4 +72,4 @@ if __name__ == '__main__':
 
     for i in range(rangeFrom - rangeFrom, rangeTo - rangeFrom):
 	    if sns[i] != None:
-		    store(sns[i][0], sns[i][1])
+		    store(sns[i][0], sns[i][1], output)
