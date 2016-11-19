@@ -47,9 +47,13 @@ if __name__ == '__main__':
 		          effects=[dust, dust],
                           effect_names=['host', 'mw'],
 		          effect_frames=['rest', 'obs'])
+    if len(sys.argv) == 1:
+		rangeFrom = 0
+		rangeTo = 11
 
-    rangeFrom = 0
-    rangeTo = 11
+    else:
+	    rangeFrom = int(sys.argv[1])
+	    rangeTo = int(sys.argv[2])
 
     dsk={}
 
@@ -63,6 +67,6 @@ if __name__ == '__main__':
     deltaT = datetime.datetime.utcnow() - deltaT
     print('Process time = {}'.format(deltaT))
 
-    for i in range(rangeFrom, rangeTo):
+    for i in range(rangeFrom - rangeFrom, rangeTo - rangeFrom):
 	    if sns[i] != None:
 		    store(sns[i][0], sns[i][1])
